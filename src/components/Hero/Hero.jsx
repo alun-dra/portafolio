@@ -23,16 +23,16 @@ export default function Hero() {
     <section
       id="home"
       aria-labelledby="hero-title"
-      className="relative overflow-hidden bg-[#f7f5f0] pt-[73px] text-slate-950 lg:h-screen"
+      className="relative overflow-hidden bg-[#f7f5f0] pt-[73px] text-slate-950"
     >
       <div
         className="absolute right-0 top-0 hidden h-full w-[45%] bg-[#111827] lg:block"
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-8 md:px-6 lg:h-[calc(100vh-73px)] lg:grid-cols-[1fr_0.9fr] lg:items-center lg:py-0">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-10 md:px-6 lg:min-h-[calc(100vh-73px)] lg:grid-cols-[1fr_0.9fr] lg:items-center lg:py-8 xl:py-0">
         <div className="max-w-3xl">
-          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-500 md:text-xs">
+          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500 md:text-xs">
             Arquitectura de Software · Desarrollo Web · Consultoría Tecnológica
           </p>
 
@@ -43,7 +43,7 @@ export default function Hero() {
             Álvaro Villalobos
           </h1>
 
-          <h2 className="mt-6 text-3xl font-semibold leading-tight md:text-4xl xl:text-5xl">
+          <h2 className="mt-5 text-3xl font-semibold leading-tight md:text-4xl xl:text-5xl">
             Arquitecto de software y desarrollador full stack para soluciones
             digitales a medida.
           </h2>
@@ -73,7 +73,7 @@ export default function Hero() {
           </div>
 
           <div
-            className="mt-9 grid grid-cols-1 border-y border-slate-300 sm:grid-cols-3"
+            className="mt-8 grid grid-cols-1 border-y border-slate-300 sm:grid-cols-3"
             aria-label="Servicios principales"
           >
             {[
@@ -96,7 +96,7 @@ export default function Hero() {
 
         <article className="relative w-full lg:pl-4">
           <div className="relative bg-white shadow-2xl">
-            <div className="border-b border-slate-200 p-6 xl:p-8">
+            <div className="border-b border-slate-200 p-5 xl:p-8">
               <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">
                 Propuesta de valor
               </p>
