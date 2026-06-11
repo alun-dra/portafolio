@@ -11,10 +11,9 @@ export default function Contact() {
   const linkedin = import.meta.env.VITE_LINKEDIN_URL
   const github = import.meta.env.VITE_GITHUB_URL
   const whatsapp = import.meta.env.VITE_WHATSAPP_URL
+  const siteUrl = import.meta.env.VITE_SITE_URL || 'https://alvarovillalobos.cl'
 
-  const formAction = email
-    ? `https://formsubmit.co/${email}`
-    : '#'
+  const formAction = email ? `https://formsubmit.co/${email}` : '#'
 
   const socialLinks = [
     {
@@ -146,9 +145,19 @@ export default function Contact() {
             value="Nuevo contacto desde alvarovillalobos.cl"
           />
           <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_next" value={`${siteUrl}/gracias`} />
+
+          <input
+            type="text"
+            name="_honey"
+            className="hidden"
+            tabIndex="-1"
+            autoComplete="off"
+          />
 
           {selectedTypes.map((type) => (
-            <input key={type} type="hidden" name="projectTypes[]" value={type} />
+            <input key={type} type="hidden" name="Tipo de necesidad[]" value={type} />
           ))}
 
           <div className="grid gap-3.5">
@@ -159,7 +168,7 @@ export default function Contact() {
                 </label>
                 <input
                   id="name"
-                  name="name"
+                  name="Nombre"
                   type="text"
                   required
                   className="w-full border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-slate-950"
@@ -172,7 +181,7 @@ export default function Contact() {
                 </label>
                 <input
                   id="company"
-                  name="company"
+                  name="Empresa u organización"
                   type="text"
                   className="w-full border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-slate-950"
                 />
@@ -185,7 +194,7 @@ export default function Contact() {
               </label>
               <input
                 id="email"
-                name="email"
+                name="Correo electrónico"
                 type="email"
                 required
                 className="w-full border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-slate-950"
@@ -222,7 +231,7 @@ export default function Contact() {
 
                 <select
                   id="budget"
-                  name="budget"
+                  name="Presupuesto estimado"
                   className="w-full border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-slate-950"
                 >
                   <option value="">Prefiero conversarlo</option>
@@ -240,7 +249,7 @@ export default function Contact() {
               </label>
               <textarea
                 id="message"
-                name="message"
+                name="Mensaje"
                 required
                 rows="3"
                 placeholder="Ejemplo: Necesito automatizar un proceso interno, crear una plataforma web o integrar sistemas..."
@@ -250,7 +259,8 @@ export default function Contact() {
 
             <button
               type="submit"
-              className="bg-slate-950 px-7 py-3.5 font-bold text-white transition hover:bg-slate-800"
+              disabled={!email}
+              className="bg-slate-950 px-7 py-3.5 font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
               Enviar solicitud de diagnóstico
             </button>
