@@ -1,19 +1,37 @@
 // src/components/Contact/Contact.jsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaGithub, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa'
 import { MdOutlineMail } from 'react-icons/md'
 
 export default function Contact() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTypes, setSelectedTypes] = useState([])
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [feedback, setFeedback] = useState(null)
 
   const email = import.meta.env.VITE_CONTACT_EMAIL
   const linkedin = import.meta.env.VITE_LINKEDIN_URL
   const github = import.meta.env.VITE_GITHUB_URL
   const whatsapp = import.meta.env.VITE_WHATSAPP_URL
-  const siteUrl = import.meta.env.VITE_SITE_URL || 'https://alvarovillalobos.cl'
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
-  const formAction = email ? `https://formsubmit.co/${email}` : '#'
+  const formAction = email ? `https://formsubmit.co/ajax/${email}` : '#'
+
+  useEffect(() => {
+    window.onTurnstileSuccess = (token) => {
+      setTurnstileToken(token)
+    }
+
+    window.onTurnstileExpired = () => {
+      setTurnstileToken('')
+    }
+
+    return () => {
+      delete window.onTurnstileSuccess
+      delete window.onTurnstileExpired
+    }
+  }, [])
 
   const socialLinks = [
     {
@@ -55,6 +73,78 @@ export default function Contact() {
         ? current.filter((item) => item !== type)
         : [...current, type]
     )
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    if (!email) {
+      setFeedback({
+        type: 'error',
+        title: 'Formulario no configurado',
+        message: 'Falta configurar el correo de destino.',
+      })
+      return
+    }
+
+    if (turnstileSiteKey && !turnstileToken) {
+      setFeedback({
+        type: 'error',
+        title: 'Verificación pendiente',
+        message: 'Completa la verificación antes de enviar el formulario.',
+      })
+      return
+    }
+
+    const formData = new FormData(event.currentTarget)
+
+    selectedTypes.forEach((type) => {
+      formData.append('Tipo de necesidad[]', type)
+    })
+
+    if (turnstileToken) {
+      formData.append('cf-turnstile-response', turnstileToken)
+    }
+
+    try {
+      setIsSending(true)
+
+      const response = await fetch(formAction, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('No se pudo enviar el formulario')
+      }
+
+      event.currentTarget.reset()
+      setSelectedTypes([])
+      setTurnstileToken('')
+
+      if (window.turnstile) {
+        window.turnstile.reset()
+      }
+
+      setFeedback({
+        type: 'success',
+        title: 'Mensaje enviado correctamente',
+        message:
+          'Gracias por contactarme. Revisaré tu solicitud y responderé personalmente a la brevedad.',
+      })
+    } catch {
+      setFeedback({
+        type: 'error',
+        title: 'No se pudo enviar el mensaje',
+        message:
+          'Inténtalo nuevamente o contáctame directamente por LinkedIn o WhatsApp.',
+      })
+    } finally {
+      setIsSending(false)
+    }
   }
 
   return (
@@ -135,8 +225,7 @@ export default function Contact() {
         </div>
 
         <form
-          action={formAction}
-          method="POST"
+          onSubmit={handleSubmit}
           className="bg-[#f7f5f0] p-5 text-slate-950 shadow-2xl"
         >
           <input
@@ -146,7 +235,6 @@ export default function Contact() {
           />
           <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_template" value="table" />
-          <input type="hidden" name="_next" value={`${siteUrl}/gracias`} />
 
           <input
             type="text"
@@ -155,10 +243,6 @@ export default function Contact() {
             tabIndex="-1"
             autoComplete="off"
           />
-
-          {selectedTypes.map((type) => (
-            <input key={type} type="hidden" name="Tipo de necesidad[]" value={type} />
-          ))}
 
           <div className="grid gap-3.5">
             <div className="grid gap-3.5 md:grid-cols-2">
@@ -257,12 +341,21 @@ export default function Contact() {
               />
             </div>
 
+            {turnstileSiteKey && (
+              <div
+                className="cf-turnstile"
+                data-sitekey={turnstileSiteKey}
+                data-callback="onTurnstileSuccess"
+                data-expired-callback="onTurnstileExpired"
+              />
+            )}
+
             <button
               type="submit"
-              disabled={!email}
+              disabled={!email || isSending}
               className="bg-slate-950 px-7 py-3.5 font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
-              Enviar solicitud de diagnóstico
+              {isSending ? 'Enviando mensaje...' : 'Enviar solicitud de diagnóstico'}
             </button>
 
             <p className="text-sm leading-relaxed text-slate-500">
@@ -329,6 +422,32 @@ export default function Contact() {
                 Confirmar selección
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {feedback && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/70 px-5">
+          <div className="w-full max-w-md bg-[#f7f5f0] p-7 text-slate-950 shadow-2xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9b7a38]">
+              {feedback.type === 'success' ? 'Solicitud enviada' : 'Aviso'}
+            </p>
+
+            <h3 className="mt-3 text-2xl font-bold">
+              {feedback.title}
+            </h3>
+
+            <p className="mt-4 leading-relaxed text-slate-600">
+              {feedback.message}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setFeedback(null)}
+              className="mt-6 w-full bg-slate-950 px-5 py-3 font-semibold text-white"
+            >
+              Entendido
+            </button>
           </div>
         </div>
       )}
