@@ -1,12 +1,11 @@
 // src/components/Contact/Contact.jsx
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { FaGithub, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa'
 import { MdOutlineMail } from 'react-icons/md'
 
 export default function Contact() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTypes, setSelectedTypes] = useState([])
-  const [turnstileToken, setTurnstileToken] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [feedback, setFeedback] = useState(null)
 
@@ -14,24 +13,8 @@ export default function Contact() {
   const linkedin = import.meta.env.VITE_LINKEDIN_URL
   const github = import.meta.env.VITE_GITHUB_URL
   const whatsapp = import.meta.env.VITE_WHATSAPP_URL
-  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
   const formAction = email ? `https://formsubmit.co/ajax/${email}` : '#'
-
-  useEffect(() => {
-    window.onTurnstileSuccess = (token) => {
-      setTurnstileToken(token)
-    }
-
-    window.onTurnstileExpired = () => {
-      setTurnstileToken('')
-    }
-
-    return () => {
-      delete window.onTurnstileSuccess
-      delete window.onTurnstileExpired
-    }
-  }, [])
 
   const socialLinks = [
     {
@@ -78,33 +61,25 @@ export default function Contact() {
   const handleSubmit = async (event) => {
     event.preventDefault()
 
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
     if (!email) {
       setFeedback({
         type: 'error',
         title: 'Formulario no configurado',
-        message: 'Falta configurar el correo de destino.',
+        message: 'Falta configurar el correo profesional de destino.',
       })
       return
     }
 
-    if (turnstileSiteKey && !turnstileToken) {
-      setFeedback({
-        type: 'error',
-        title: 'Verificación pendiente',
-        message: 'Completa la verificación antes de enviar el formulario.',
-      })
+    if (formData.get('_honey')) {
       return
     }
-
-    const formData = new FormData(event.currentTarget)
 
     selectedTypes.forEach((type) => {
       formData.append('Tipo de necesidad[]', type)
     })
-
-    if (turnstileToken) {
-      formData.append('cf-turnstile-response', turnstileToken)
-    }
 
     try {
       setIsSending(true)
@@ -117,17 +92,18 @@ export default function Contact() {
         },
       })
 
-      if (!response.ok) {
-        throw new Error('No se pudo enviar el formulario')
+      const data = await response.json()
+
+      const wasSent =
+        response.ok &&
+        (data.success === true || data.success === 'true')
+
+      if (!wasSent) {
+        throw new Error(data.message || 'No se pudo enviar el formulario')
       }
 
-      event.currentTarget.reset()
+      form.reset()
       setSelectedTypes([])
-      setTurnstileToken('')
-
-      if (window.turnstile) {
-        window.turnstile.reset()
-      }
 
       setFeedback({
         type: 'success',
@@ -340,15 +316,6 @@ export default function Contact() {
                 className="w-full resize-none border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-950"
               />
             </div>
-
-            {turnstileSiteKey && (
-              <div
-                className="cf-turnstile"
-                data-sitekey={turnstileSiteKey}
-                data-callback="onTurnstileSuccess"
-                data-expired-callback="onTurnstileExpired"
-              />
-            )}
 
             <button
               type="submit"
