@@ -1,4 +1,5 @@
 // src/components/Hero/Hero.jsx
+
 export default function Hero() {
   const valueItems = [
     [
@@ -23,27 +24,27 @@ export default function Hero() {
     <section
       id="home"
       aria-labelledby="hero-title"
-      className="relative overflow-hidden bg-[#f7f5f0] pt-[73px] text-slate-950"
+      className="relative overflow-hidden bg-[#f7f5f0] pt-[73px] text-slate-950 lg:min-h-screen"
     >
       <div
-        className="absolute right-0 top-0 hidden h-full w-[45%] bg-[#111827] lg:block"
+        className="absolute right-0 top-0 hidden h-full w-[43%] bg-[#111827] lg:block"
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-10 md:px-6 lg:min-h-[calc(100vh-73px)] lg:grid-cols-[1fr_0.9fr] lg:items-center lg:py-8 xl:py-0">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 py-10 md:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-12 lg:py-8 xl:min-h-[calc(100vh-73px)] xl:py-0">
         <div className="max-w-3xl">
-          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500 md:text-xs">
+          <p className="mb-4 max-w-2xl text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500 md:text-xs">
             Arquitectura de Software · Desarrollo Web · Consultoría Tecnológica
           </p>
 
           <h1
             id="hero-title"
-            className="text-5xl font-bold leading-none tracking-tight md:text-6xl xl:text-7xl"
+            className="text-5xl font-bold leading-none tracking-tight md:text-6xl lg:text-5xl xl:text-7xl"
           >
             Álvaro Villalobos
           </h1>
 
-          <h2 className="mt-5 text-3xl font-semibold leading-tight md:text-4xl xl:text-5xl">
+          <h2 className="mt-5 text-3xl font-semibold leading-tight md:text-4xl lg:text-3xl xl:text-5xl">
             Arquitecto de software y desarrollador full stack para soluciones
             digitales a medida.
           </h2>
@@ -94,14 +95,14 @@ export default function Hero() {
           </div>
         </div>
 
-        <article className="relative w-full lg:pl-4">
+        <article className="relative w-full lg:pl-2 xl:pl-4">
           <div className="relative bg-white shadow-2xl">
             <div className="border-b border-slate-200 p-5 xl:p-8">
               <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">
                 Propuesta de valor
               </p>
 
-              <h2 className="mt-3 text-2xl font-bold leading-tight xl:text-3xl">
+              <h2 className="mt-3 text-2xl font-bold leading-tight lg:text-2xl xl:text-3xl">
                 No vendo código. Construyo soluciones tecnológicas que resuelven
                 problemas reales.
               </h2>
@@ -111,10 +112,13 @@ export default function Hero() {
               {valueItems.map(([title, text]) => (
                 <div
                   key={title}
-                  className="grid gap-3 p-5 md:grid-cols-[135px_1fr] xl:p-6"
+                  className="grid gap-3 p-4 md:grid-cols-[130px_1fr] xl:p-6"
                 >
                   <h3 className="font-bold">{title}</h3>
-                  <p className="leading-relaxed text-slate-600">{text}</p>
+
+                  <p className="leading-relaxed text-slate-600">
+                    {text}
+                  </p>
                 </div>
               ))}
             </div>

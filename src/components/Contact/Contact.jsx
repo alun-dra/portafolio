@@ -140,22 +140,25 @@ export default function Contact() {
 
             <fieldset>
               <legend className="mb-3 block text-sm font-bold">
-                ¿Qué necesitas? Puedes seleccionar más de una opción.
+                ¿Qué necesitas? Selecciona una o más opciones.
               </legend>
 
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="flex flex-wrap gap-2">
                 {projectTypes.map((type) => (
                   <label
                     key={type}
-                    className="flex cursor-pointer items-center gap-3 border border-slate-300 bg-white px-4 py-3 text-sm font-semibold transition hover:border-slate-950"
+                    className="group cursor-pointer"
                   >
                     <input
                       type="checkbox"
                       name="projectTypes[]"
                       value={type}
-                      className="h-4 w-4 accent-slate-950"
+                      className="peer sr-only"
                     />
-                    {type}
+
+                    <span className="block border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition peer-checked:border-slate-950 peer-checked:bg-slate-950 peer-checked:text-white hover:border-slate-950">
+                      {type}
+                    </span>
                   </label>
                 ))}
               </div>
